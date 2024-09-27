@@ -23,23 +23,8 @@ assert returnCode == 8
 ### 002: hashStop ends in loop when it's executed right after hashDirectory
 - **Steps to Reproduce**:
   1. Initialize hash
-  2. run hashDirectory()
-  3. run hashStop()
-- **Expected Result**: Returned Code is 0 (HASH_ERROR_OK)
-
-- **Acual Result**: Application ends up in loop
-```bash
-wrapper.hashInit(lib)
-returnCode, ID = wrapper.hashDirectory(lib, ".")
-wrapper.hashStop(lib, ID)
-```
----
-
-### 003: hashTerminate ends in loop when it's executed right after hashDirectory
-- **Steps to Reproduce**:
-  1. Initialize hash
-  2. run hashDirectory()
-  3. run hashStop()
+  2. run hashDirectory(lib, ".")
+  3. run hashStop(lib, ID)
 - **Expected Result**: Returned Code is 0 (HASH_ERROR_OK)
 
 - **Acual Result**: Application ends up in loop
