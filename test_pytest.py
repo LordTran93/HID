@@ -69,9 +69,8 @@ def test_correct_files_hashed(cleanup):
             ret = wrapper.waitforHashDirectory(lib, ID)
             if (ret):
                 storelogbit = wrapper.hashedfiles(lib)
-                storedlogs = wrapper.filesInDirectory(storelogbit)
-                for i in range(len(expected)):
-                     assert expected[i] == storedlogs[i]                
+                storedLogFiles = wrapper.filesInDirectory(storelogbit)
+                wrapper.compareFiles(expected, storedLogFiles)              
                 returnCode = wrapper.hashStop(lib, ID)
                 assert returnCode == 0
         returnCode = wrapper.hashTerminate(lib)
@@ -100,7 +99,7 @@ def test_hash_read_next_log_line_with_init(cleanup):
 
 def test_hash_read_next_log_line_with_empty_directory(cleanup):
         # Verify error code of hashReadNextLogLine with empty repository
-        os.chdir('.\\test')
+        os.chdir('.\\bin')
         lib = wrapper.loadHashLibrary("..\\bin\\windows\\hash.dll")
         wrapper.hashInit(lib)
         returnCode, ID = wrapper.hashDirectory(lib, ".")
@@ -114,7 +113,7 @@ def test_hash_read_next_log_line_with_empty_directory(cleanup):
 
 def test_hash_file_with_space_and_without_format(cleanup):
         # Verify that hash can work with space and no format
-        file_name = "test_file"
+        file_name = "test file"
         with open(file_name, "w") as f:
                 f.write("This is a pytest test file.")
         wrapper.hashInit(lib)
@@ -125,15 +124,14 @@ def test_hash_file_with_space_and_without_format(cleanup):
             ret = wrapper.waitforHashDirectory(lib, ID)
             if (ret):
                 storelogbit = wrapper.hashedfiles(lib)
-                storedlogs = wrapper.filesInDirectory(storelogbit)
-                for i in range(len(expected)):
-                     assert expected[i] == storedlogs[i]              
+                storedLogFiles = wrapper.filesInDirectory(storelogbit)
+                wrapper.compareFiles(expected, storedLogFiles)           
                 wrapper.hashStop(lib, ID)
         wrapper.hashTerminate(lib)
         if os.path.exists(file_name):
                 os.remove(file_name)
 
-def test_hash_file_with_special_character_and_number(cleanup):
+def test_hash_filename_with_special_character_and_number(cleanup):
         # Verify that hash can work with special characters and number
         file_name = "ahoj+!#$%^&(){};'[]=-0"
         with open(file_name, "w") as f:
@@ -146,13 +144,58 @@ def test_hash_file_with_special_character_and_number(cleanup):
             ret = wrapper.waitforHashDirectory(lib, ID)
             if (ret):
                 storelogbit = wrapper.hashedfiles(lib)
-                storedlogs = wrapper.filesInDirectory(storelogbit)
-                for i in range(len(expected)):
-                     assert expected[i] == storedlogs[i]              
+                storedLogFiles = wrapper.filesInDirectory(storelogbit)
+                wrapper.compareFiles(expected, storedLogFiles)        
                 wrapper.hashStop(lib, ID)
         wrapper.hashTerminate(lib)
         if os.path.exists(file_name):
                 os.remove(file_name)
+
+def test_hash_file_with_special_character(cleanup):
+        # Verify that hash can work with special characters in the file
+        file_name = "special_characters_in_file"
+        with open(file_name, "w", encoding='utf-8') as f:
+                f.write("€, ă, á, ㅂ ahoj+!#$%^&(){};")
+        wrapper.hashInit(lib)
+        expected = wrapper.expectedFiles (".")
+        assert file_name in expected 
+        returnCode, ID = wrapper.hashDirectory(lib, ".")
+        if (returnCode == 0):
+            ret = wrapper.waitforHashDirectory(lib, ID)
+            if (ret):
+                storelogbit = wrapper.hashedfiles(lib)
+                storedLogFiles = wrapper.filesInDirectory(storelogbit)
+                wrapper.compareFiles(expected, storedLogFiles)        
+                wrapper.hashStop(lib, ID)
+        wrapper.hashTerminate(lib)
+        if os.path.exists(file_name):
+                os.remove(file_name)
+
+def test_2_empty_files_same_hash(cleanup):
+        # Verify that same hash for 2 empty files
+        os.chdir('.\\bin')
+        lib = wrapper.loadHashLibrary("..\\bin\\windows\\hash.dll")
+        file_a = "a"
+        with open(file_a, "w") as f:
+               pass
+        file_b = "b"
+        with open(file_b, "w") as f:
+               pass
+        wrapper.hashInit(lib)
+        returnCode, ID = wrapper.hashDirectory(lib, ".")
+        if (returnCode == 0):
+            ret = wrapper.waitforHashDirectory(lib, ID)
+            if (ret):
+                storelogbit = wrapper.hashedfiles(lib)
+                hash = wrapper.extractHash(storelogbit)
+                assert hash.count(hash[0]) == 2
+                wrapper.hashStop(lib, ID)
+        wrapper.hashTerminate(lib)
+        if os.path.exists(file_a):
+                os.remove(file_a)
+        if os.path.exists(file_b):
+                os.remove(file_b)      
+        os.chdir('..\\')
 
 def test_multiple_operation_id(cleanup):
         # Verify operation ids are alocated correctly

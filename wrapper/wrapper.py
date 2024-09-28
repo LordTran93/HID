@@ -121,7 +121,7 @@ def hashedfiles(library):
                 break           
         return storelogbit
 
-def filesInDirectory(storelogbit):
+def filesInDirectory(storelogbit): # Written for current directory
         files = []
         for i in storelogbit:
             decoded_string = i.decode('utf-8')
@@ -130,7 +130,18 @@ def filesInDirectory(storelogbit):
             files.append(file_name)
         return files
 
+def extractHash(storelogbit):
+        arr = []
+        for i in storelogbit:
+            decoded_string = i.decode('utf-8')[-29:]
+            arr.append(decoded_string)
+        return arr
+
 def hashFree(library):
-    freeMemory = library.HashFree()
-    freeMemory.argtypes  = [ctypes.c_void_p]
-    freeMemory.restype = None
+        freeMemory = library.HashFree()
+        freeMemory.argtypes  = [ctypes.c_void_p]
+        freeMemory.restype = None
+
+def compareFiles(expected, storedlogs):
+        for i in range(len(expected)):
+            assert expected[i] == storedlogs[i]

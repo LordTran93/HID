@@ -95,11 +95,10 @@ returnCode = wrapper.hashStop(lib, ID)
 assert returnCode == 7
 ```
 ---
-### 008: Files with non-ASCII characters causing crash
+### 008: Filename with non-ASCII characters causing crash
 - **Steps to Reproduce**:
   1. Add file with non-ASCII character (€, ㅂ, á )
-  2. 
-- **Expected Result**: Hashdirectory is successful or proper Error Code should returned
+- **Expected Result**: Hashdirectory is successful or proper Error Code should be returned
 
 - **Acual Result**: Application unexpectly crash. Following error was found in log
 ```bash
