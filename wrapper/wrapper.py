@@ -31,7 +31,7 @@ def loadHashLibrary(libFullPath):
         print(e)
         raise e
     else:
-        print("\nLibray loaded successfully.")
+        print("\nLibrary loaded successfully.")
         return lib
 
 
@@ -126,7 +126,7 @@ def filesInDirectory(storelogbit):
         for i in storelogbit:
             decoded_string = i.decode('utf-8')
             cleared_string = decoded_string.replace('1 .\\','')
-            file_name = cleared_string.split(' ')[0]
+            file_name = cleared_string.rsplit(' ',1)[0]
             files.append(file_name)
         return files
 
